@@ -1,0 +1,178 @@
+version: '3.3'
+
+services:
+
+#######################################################
+#
+# BACKEND 
+#
+#######################################################
+  ibin-mongodb:
+    image: mongodb:3.6
+    hostname: "ibin-mongodb"
+    ports:
+      - ${IBIN_MONGODB_PORT}:27017
+    volumes:
+      - /opt/docker/compose/ibin-mongodb/${PROJECT_PREFIX}/db:/data/db:rw
+    networks:
+      - ibin
+    restart: on-failure
+
+    env_file:
+      - config_service_access.env
+
+    labels:
+      - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"      
+
+
+  ibin-backend-config-service:
+    depends_on:
+      - ibin-mongodb
+    image:  ${DOCKER_REPOSITORY}ibin-backend-config-service:${DEPLOY_VERSION}
+    hostname: "ibin-backend-config-service"
+    ports:
+      - ${IBIN_BACKEND_CONFIG_SERVICE_PORT}:8080
+    networks:
+      - ibin
+    restart: on-failure
+
+    labels:
+      - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"
+
+    env_file:
+      - config_service_access.env
+    # Some variables are multiline-strings so they couldn't be passed easyly via .env file
+    environment:
+      GIT_REPO: ${GIT_REPO}
+      GIT_BRANCH: ${GIT_BRANCH}
+      GIT_PUBLIC_KEY: ${GIT_PUBLIC_KEY}
+      GIT_PRIVATE_KEY: ${GIT_PRIVATE_KEY}
+
+    labels:
+      - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"      
+
+
+  ibin-backend-service-registry:
+    depends_on:
+      - ibin-backend-config-service
+    image: ${DOCKER_REPOSITORY}ibin-backend-service-registry:${DEPLOY_VERSION}
+    hostname: "ibin-backend-service-registry"
+    ports:
+      - ${IBIN_BACKEND_SERVICE_REGISTRY_PORT}:8080
+    networks:
+      - ibin
+    restart: on-failure
+
+    env_file:
+      - config_service_access.env
+
+    labels:
+      - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"      
+
+
+  ibin-backend-storage-service:
+    depends_on:
+      - ibin-mongodb
+      - ibin-backend-config-service
+      - ibin-backend-service-registry
+    image: ${DOCKER_REPOSITORY}ibin-backend-storage-service:${DEPLOY_VERSION}
+    hostname: "ibin-backend-storage-service"
+    ports:
+      - ${IBIN_BACKEND_STORAGE_SERVICE_PORT}:8080
+    networks:
+      - ibin
+    restart: on-failure
+
+    env_file:
+      - config_service_access.env
+      - variables_tech.env
+      - variables_business.env
+        
+    labels:
+      - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"      
+
+
+  ibin-backend-core-service:
+    depends_on:
+      - ibin-backend-config-service
+      - ibin-backend-storage-service
+    image: ${DOCKER_REPOSITORY}ibin-backend-core-service:${DEPLOY_VERSION}
+    hostname: "ibin-backend-core-service"
+    ports:
+      - ${IBIN_BACKEND_CORE_SERVICE_PORT}:8080
+    networks:
+      - ibin
+    restart: on-failure
+
+    env_file:
+      - config_service_access.env
+      - variables_tech.env
+      - variables_business.env
+
+    labels:
+      - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"      
+
+
+  ibin-backend-front-api-service:
+    depends_on:
+      - ibin-backend-config-service
+      - ibin-backend-storage-service
+    image: ${DOCKER_REPOSITORY}ibin-backend-front-api-service:${DEPLOY_VERSION}
+    hostname: "ibin-backend-front-api-service"
+    ports:
+      - ${IBIN_BACKEND_FRONT_API_SERVICE_PORT}:8080
+    networks:
+      - ibin
+    restart: on-failure
+
+    env_file:
+      - config_service_access.env
+      - variables_tech.env
+      - variables_business.env
+
+    labels:
+      - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"      
+
+#######################################################
+#
+# FRONTEND 
+#
+#######################################################
+      
+  ibin-frontend:
+    depends_on:
+      - ibin-backend-front-api-service
+  
+    image: ${DOCKER_REPOSITORY}ibin-frontend:${DEPLOY_VERSION}
+    hostname: ibin-frontend
+    ports:
+      - "${IBIN_FRONTEND_UI_PORT}:${IBIN_FRONTEND_SERVER_PORT}"
+    entrypoint: /app/start.sh
+    env_file:
+      - variables_tech.env
+    volumes:
+      - ${IBIN_LOG_PATH}/ibin-frontend/:/app/logs/:rw
+    labels:
+      - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"
+
+  ibin-proxy:
+    depends_on:
+      - ibin-frontend
+    image: nginx:1.13.9-alpine
+    hostname: ibin-proxy
+    ports: 
+      - ${IBIN_PROXY_PORT}:8080
+    volumes:
+      - ${IBIN_LOG_PATH}/ibin-proxy/:/var/log/nginx/:rw
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    command: [nginx-debug, '-g', 'daemon off;']
+    labels:
+      - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"
+ 
+networks:
+  ibin:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: ${IB_INST_BACKEND_NETWORK}

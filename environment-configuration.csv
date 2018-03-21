@@ -1,0 +1,2 @@
+#Environment Docker-project-prefix Port-prefix Subnet Target-host
+azure azure 20 20 docker-ibin.cloudapp.net
