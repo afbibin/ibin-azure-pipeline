@@ -7,7 +7,7 @@
 
 
 # Git repository URL
-export GIT_REPO=ssh://git@github.com:afbibin/backend-configuration.git
+export GIT_REPO="ssh://git@github.com:afbibin/backend-configuration.git"
 
 
 # Git branch is initialized with the value, based on the currently choosen test-environment
