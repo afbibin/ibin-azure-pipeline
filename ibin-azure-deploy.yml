@@ -79,7 +79,6 @@ services:
     env_file:
       - config_service_access.env
       - variables_tech.env
-      - variables_business.env
         
     labels:
       - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"      
@@ -100,7 +99,6 @@ services:
     env_file:
       - config_service_access.env
       - variables_tech.env
-      - variables_business.env
 
     labels:
       - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"      
@@ -121,7 +119,6 @@ services:
     env_file:
       - config_service_access.env
       - variables_tech.env
-      - variables_business.env
 
     labels:
       - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"      
