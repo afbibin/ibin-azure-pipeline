@@ -1,22 +1,5 @@
 #!/bin/sh
 
-##########################################################################################
-# PARAMETERS from Jenkins job:
-#
-
-#We should pull deploy scripts from Git: ssh://git@github.com/afbibin/ibin-azure-pipeline
-BRANCH_TO_BUILD=master
-
-# Docker images tag
-DEPLOY_VERSION=stable
-
-#Specific test environment
-TEST_ENVIRONMENT=azure
-
-#
-#
-##########################################################################################
-
 
 export DOCKER_REPOSITORY=afbibin/
 
