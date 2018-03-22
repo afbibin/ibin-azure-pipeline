@@ -59,8 +59,8 @@ echo "Deployment is configured with the following environment isolation paramete
 echo "TEST_ENVIRONMENT=${TEST_ENVIRONMENT}; PROJECT_PREFIX=${PROJECT_PREFIX}; PORT_PREFIX=${PORT_PREFIX}; SUBNET=${SUBNET}; TARGET_HOST=${TARGET_HOST}"
 
 # Initialize Env variables
-sh ./init_variables_tech.sh
-sh ./init_config_service_repository.sh
+bash ./init_variables_tech.sh
+bash ./init_config_service_repository.sh
 
 # Set the service labels prefix (will be added to the docker containers)
 export LABEL_PREFIX=ibin.
