@@ -1,4 +1,5 @@
 version: '3.3'
+
 services:
   ibin-mongodb:
     image: mongodb:3.6
@@ -126,12 +127,6 @@ services:
     labels:
       - "${LABEL_PREFIX}environment=${PROJECT_PREFIX}"      
 
-#######################################################
-#
-# FRONTEND 
-#
-#######################################################
-      
   ibin-frontend:
     depends_on:
       - ibin-backend-front-api-service
