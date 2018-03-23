@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 ############################################################################
 # This script initializes the system environment variables
 # Optionally it can store particular variable "name-value" pair 
