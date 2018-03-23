@@ -129,6 +129,8 @@ services:
   
     image: ${DOCKER_REPOSITORY}ibin-frontend:${DEPLOY_VERSION}
     hostname: ibin-frontend
+    networks:
+      - ibin
     ports:
       - "${IBIN_FRONTEND_UI_PORT}:${IBIN_FRONTEND_SERVER_PORT}"
     entrypoint: /app/start.sh
@@ -144,6 +146,8 @@ services:
       - ibin-frontend
     image: nginx:1.13.9-alpine
     hostname: ibin-proxy
+    networks:
+      - ibin
     ports: 
       - ${IBIN_PROXY_PORT}:8080
     volumes:
