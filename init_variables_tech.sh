@@ -18,7 +18,9 @@ TARGET_ENV_FILE="./variables_tech.env"
 #       into the specified ${TARGET_ENV_FILE} file
 ###########################################################################################
 store_variable() {
-echo $1=\"${!1}\" >> ${TARGET_ENV_FILE}
+#echo $1=\"${!1}\" >> ${TARGET_ENV_FILE}
+echo $1=${!1} >> ${TARGET_ENV_FILE}
+
 }
 
 echo "# NOTE: This file is generated with special script $0" > "${TARGET_ENV_FILE}"
