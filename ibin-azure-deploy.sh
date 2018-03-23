@@ -1,5 +1,6 @@
 #!/bin/sh
 
+set -x
 
 export DOCKER_REPOSITORY=afbibin/
 
